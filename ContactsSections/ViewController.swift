@@ -21,13 +21,42 @@ class ViewController: UITableViewController {
         "Dmitriy", "Daniil", "Dasha"
     ]
     let twoDimensionalArray = [
-        ["Petya", "Vasya", "Ivan", "Masha", "Kolya"],
+        ["A_Petya", "A_Vasya", "A_Ivan", "A_Masha", "A_Kolya"],
         ["C_Alex", "C_Tolic", "C_Karl", "C_Mira", "C_Gosha"],
-        ["Dmitriy", "Daniil", "Dasha"]
+        ["Dmitriy", "Daniil", "Dasha"],
+        ["Pavel", "Petr"]
     ]
+    
+    var showIndexPaths = false
+    
+    @objc func handleShowIndexPath() {
+        print("Reload animation of IndexPath")
+        
+        var indexPathToReload = [IndexPath]()
+
+        for section in twoDimensionalArray.indices {
+            for row in twoDimensionalArray[section].indices {
+                let indexPath = IndexPath(row: row, section: section)
+                indexPathToReload.append(indexPath)
+            }
+        }
+        
+//        for index in twoDimensionalArray[0].indices {
+//            let indexPath = IndexPath(row: index, section: 0)
+//            indexPathToReload.append(indexPath)
+//        }
+        
+        showIndexPaths = !showIndexPaths
+        
+        let animationStyle = showIndexPaths ? UITableViewRowAnimation.right : .left
+        
+        tableView.reloadRows(at: indexPathToReload, with: animationStyle)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Show IndexPath", style: .plain, target: self, action: #selector(handleShowIndexPath))
         
         navigationItem.title = "Contacts"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -58,13 +87,13 @@ class ViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath)
         
-//        let name = self.names[indexPath.row]
-        
-        let name = indexPath.section == 0 ? names[indexPath.row] : cNames[indexPath.row]
+        let name = twoDimensionalArray[indexPath.section][indexPath.row]
         
         cell.textLabel?.text = name
         
-        cell.textLabel?.text = "\(name) Section: \(indexPath.section) Row: \(indexPath.row)"
+        if showIndexPaths {
+            cell.textLabel?.text = "\(name) Section: \(indexPath.section) Row: \(indexPath.row)"
+        }
         
         return cell
     }
